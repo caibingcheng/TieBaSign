@@ -2,9 +2,6 @@ name: 'Baidu Tieba Auto Sign'
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
   schedule:
     - cron: '5 16,22 * * *'
 
@@ -24,3 +21,31 @@ jobs:
         env:
           BDUSS: ${{ secrets.BDUSS }}
         run: python main.py
+      - name: 'Upload Record'
+        uses: actions/upload-artifact@v2
+        with:
+          name: result
+          path: result.md
+
+  publish_result:
+    needs: tieba_sign
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Download Record'
+        uses: actions/download-artifact@v2
+        with:
+          name: result
+      - name: 'Send Mail'
+        uses: dawidd6/action-send-mail@master
+        with:
+          server_address: smtp.163.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: TieBaSign Report
+          html_body: file://result.md
+          to: ${{ secrets.MAIL_TARGET }}
+          from: TieBaSign
+          convert_markdown: true
+
+

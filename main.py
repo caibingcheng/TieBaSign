@@ -7,8 +7,7 @@ import copy
 import logging
 import random
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+s = requests.Session()
 
 # API_URL
 LIKIE_URL = "http://c.tieba.baidu.com/c/f/forum/like"
@@ -43,8 +42,48 @@ UTF8 = "utf-8"
 SIGN = "sign"
 KW = "kw"
 
-s = requests.Session()
+class logger():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    _logger = logging.getLogger(__name__)
+    _logger_file = "result.md"
+    _server_time = time.asctime(time.localtime(time.time()))
+    _result_header = '## TieBa Sign Repoter'
+    with open(_logger_file, 'w') as f:
+        f.write(_result_header + '\n\n')
+        f.write('> Server Time: ' + _server_time + '\n\n')
+        f.close()
 
+    @staticmethod
+    def _write(msg):
+        with open(logger._logger_file, 'a+') as f:
+            f.write(msg + '\n\n')
+            f.close()
+
+    @staticmethod
+    def error(msg):
+        logger._logger.error(msg)
+        logger._write(msg)
+
+    @staticmethod
+    def info(msg):
+        logger._logger.info(msg)
+        logger._write(msg)
+
+def get_pdata(bduss, page_no):
+    return {
+            'BDUSS': bduss,
+            '_client_type': '2',
+            '_client_id': 'wappc_1534235498291_488',
+            '_client_version': '9.7.8.0',
+            '_phone_imei': '000000000000000',
+            'from': '1008621y',
+            'page_no': str(page_no),
+            'page_size': '200',
+            'model': 'MI+5',
+            'net_type': '1',
+            'timestamp': str(int(time.time())),
+            'vcode_tag': '11',
+        }
 
 def get_tbs(bduss):
     logger.info("获取tbs开始")
@@ -65,20 +104,7 @@ def get_favorite(bduss):
     # 客户端关注的贴吧
     returnData = {}
     i = 1
-    data = {
-        'BDUSS': bduss,
-        '_client_type': '2',
-        '_client_id': 'wappc_1534235498291_488',
-        '_client_version': '9.7.8.0',
-        '_phone_imei': '000000000000000',
-        'from': '1008621y',
-        'page_no': '1',
-        'page_size': '200',
-        'model': 'MI+5',
-        'net_type': '1',
-        'timestamp': str(int(time.time())),
-        'vcode_tag': '11',
-    }
+    data = get_pdata(bduss, 1)
     data = encodeData(data)
     try:
         res = s.post(url=LIKIE_URL, data=data, timeout=5).json()
@@ -96,20 +122,7 @@ def get_favorite(bduss):
         returnData['forum_list']['gconforum'] = []
     while 'has_more' in res and res['has_more'] == '1':
         i = i + 1
-        data = {
-            'BDUSS': bduss,
-            '_client_type': '2',
-            '_client_id': 'wappc_1534235498291_488',
-            '_client_version': '9.7.8.0',
-            '_phone_imei': '000000000000000',
-            'from': '1008621y',
-            'page_no': str(i),
-            'page_size': '200',
-            'model': 'MI+5',
-            'net_type': '1',
-            'timestamp': str(int(time.time())),
-            'vcode_tag': '11',
-        }
+        data = get_pdata(bduss, i)
         data = encodeData(data)
         try:
             res = s.post(url=LIKIE_URL, data=data, timeout=5).json()
@@ -174,13 +187,20 @@ def main():
         if(len(i) <= 0):
             logger.info("未检测到BDUSS")
             continue
-        logger.info("开始签到第" + str(n) + "个用户" + i)
+        logger.info("开始签到第" + str(n + 1) + "个用户")
         tbs = get_tbs(i)
         favorites = get_favorite(i)
-        for j in favorites:
-            time.sleep(random.randint(1,5))
-            client_sign(i, tbs, j["id"], j["name"])
-        logger.info("完成第" + str(n) + "个用户签到")
+        if type(favorites) is not type([]):
+            logger.error("获取贴吧列表失败")
+        else:
+            for j in favorites:
+                time.sleep(random.randint(1,5))
+                # still wait even error accur
+                if "id" not in j or "name" not in j:
+                    logger.error("获取贴吧失败")
+                    continue
+                client_sign(i, tbs, j["id"], j["name"])
+        logger.info("完成第" + str(n + 1) + "个用户签到")
     logger.info("所有用户签到结束")
 
 

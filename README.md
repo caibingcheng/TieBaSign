@@ -6,7 +6,12 @@
 
 ## 使用说明
 
-1. Fork 本仓库，然后点击你的仓库右上角的 Settings，找到 Secrets 这一项，添加一个库秘密变量。其中 `BDUSS` 存放你的 BDUSS。支持同时添加多个帐户，BDUSS 之间用 `#` 隔开即可。
+1. Fork 本仓库，然后点击你的仓库右上角的 Settings，找到 Secrets 这一项，添加一个库秘密变量。
+
+- 1.1 `BDUSS` 存放你的 BDUSS。支持同时添加多个帐户，BDUSS 之间用 `#` 隔开即可
+- 1.2 `MAIL_USERNAME` 存放163邮箱地址
+- 1.3 `MAIL_PASSWORD` 存放163邮箱授权密码
+- 1.4 `MAIL_TARGET` 存放收件邮箱
 
 ![添加库秘密变量](/img/new_repository_secret.png)
 ![添加BDUSS](/img/add_BDUSS.png)
