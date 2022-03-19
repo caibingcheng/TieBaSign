@@ -60,13 +60,15 @@ class logger():
             f.close()
 
     @staticmethod
-    def error(msg):
-        logger._logger.error(msg)
+    def error(msg, printen=True):
+        if printen:
+            logger._logger.error(msg)
         logger._write(msg)
 
     @staticmethod
-    def info(msg):
-        logger._logger.info(msg)
+    def info(msg, printen=True):
+        if printen:
+            logger._logger.info(msg)
         logger._write(msg)
 
 def get_pdata(bduss, page_no):
@@ -173,7 +175,7 @@ def encodeData(data):
 
 def client_sign(bduss, tbs, fid, kw):
     # 客户端签到
-    logger.info("开始签到贴吧：" + kw)
+    logger.info("开始签到贴吧：" + kw, printen=False)
     data = copy.copy(SIGN_DATA)
     data.update({BDUSS: bduss, FID: fid, KW: kw, TBS: tbs, TIMESTAMP: str(int(time.time()))})
     data = encodeData(data)

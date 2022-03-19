@@ -21,6 +21,11 @@ jobs:
         env:
           BDUSS: ${{ secrets.BDUSS }}
         run: python main.py
+      - name: 'Encrypte Record'
+        env:
+          ENC_KEY: ${{ secrets.ENC_KEY }}
+          ENC_FILE: result.md
+        run: python encrypter.py
       - name: 'Upload Record'
         uses: actions/upload-artifact@v2
         with:
@@ -31,10 +36,23 @@ jobs:
     needs: tieba_sign
     runs-on: ubuntu-latest
     steps:
+      - name: 'Checkout codes'
+        uses: actions/checkout@v2
+      - name: 'Set python'
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.6'
+      - name: 'Install dependencies'
+        run: python -m pip install --upgrade requests
       - name: 'Download Record'
         uses: actions/download-artifact@v2
         with:
           name: result
+      - name: 'Encrypte Record'
+        env:
+          ENC_KEY: ${{ secrets.ENC_KEY }}
+          ENC_FILE: result.md
+        run: python encrypter.py
       - name: 'Send Mail'
         uses: dawidd6/action-send-mail@master
         with:
