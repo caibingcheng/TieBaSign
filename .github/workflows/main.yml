@@ -30,38 +30,38 @@ jobs:
           name: result
           path: result.md
 
-  publish_result:
-    needs: tieba_sign
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Checkout codes'
-        uses: actions/checkout@v2
-      - name: 'Set python'
-        uses: actions/setup-python@v1
-        with:
-          python-version: '3.6'
-      - name: 'Install dependencies'
-        run: python -m pip install --upgrade requests
-      - name: 'Download Record'
-        uses: actions/download-artifact@v2
-        with:
-          name: result
-      - name: 'Encrypte Record'
-        env:
-          ENC_KEY: ${{ secrets.ENC_KEY }}
-          ENC_FILE: result.md
-        run: python encrypter.py
-      - name: 'Send Mail'
-        uses: dawidd6/action-send-mail@master
-        with:
-          server_address: smtp.163.com
-          server_port: 465
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: TieBaSign Report
-          html_body: file://result.md
-          to: ${{ secrets.MAIL_TARGET }}
-          from: TieBaSign
-          convert_markdown: true
+#   publish_result:
+#     needs: tieba_sign
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: 'Checkout codes'
+#         uses: actions/checkout@v2
+#       - name: 'Set python'
+#         uses: actions/setup-python@v1
+#         with:
+#           python-version: '3.6'
+#       - name: 'Install dependencies'
+#         run: python -m pip install --upgrade requests
+#       - name: 'Download Record'
+#         uses: actions/download-artifact@v2
+#         with:
+#           name: result
+#       - name: 'Encrypte Record'
+#         env:
+#           ENC_KEY: ${{ secrets.ENC_KEY }}
+#           ENC_FILE: result.md
+#         run: python encrypter.py
+#       - name: 'Send Mail'
+#         uses: dawidd6/action-send-mail@master
+#         with:
+#           server_address: smtp.163.com
+#           server_port: 465
+#           username: ${{ secrets.MAIL_USERNAME }}
+#           password: ${{ secrets.MAIL_PASSWORD }}
+#           subject: TieBaSign Report
+#           html_body: file://result.md
+#           to: ${{ secrets.MAIL_TARGET }}
+#           from: TieBaSign
+#           convert_markdown: true
 
 
