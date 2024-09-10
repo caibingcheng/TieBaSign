@@ -25,7 +25,7 @@ jobs:
           ENC_FILE: result.md
         run: python encrypter.py
       - name: 'Upload Record'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: result
           path: result.md
