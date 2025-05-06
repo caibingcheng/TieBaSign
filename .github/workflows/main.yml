@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '5 22 * * *'
+    - cron: '5 8 * * *'
 
 jobs:
   tieba_sign:
