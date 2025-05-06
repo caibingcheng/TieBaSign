@@ -207,4 +207,10 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    for _ in range(3):
+        try:
+            main()
+            break
+        except Exception as e:
+            logger.error(e)
+        time.sleep(60)
